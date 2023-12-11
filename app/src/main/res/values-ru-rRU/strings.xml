@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_note">Добавить заметку</string>
+    <string name="edit_note">Изменить заметку</string>
+    <string name="title">Заголовок</string>
+    <string name="content">Контент</string>
+    <string name="detail_note">Режим чтения</string>
+    <string name="toast_message">Пожалуйста, заполните заголовок!</string>
+</resources>
