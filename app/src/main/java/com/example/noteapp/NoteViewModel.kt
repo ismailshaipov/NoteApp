@@ -11,6 +11,9 @@ import kotlinx.coroutines.withContext
 class NoteViewModel(private val dbHelper: BDHelper) : ViewModel() {
     private val _notes = mutableStateOf<List<Note>>(emptyList())
     val notes: State<List<Note>> get() = _notes
+    //private val _notes = MutableLiveData<List<Note>>(emptyList())
+    //val notes: LiveData<List<Note>> get() = _notes
+
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -48,8 +51,6 @@ class NoteViewModel(private val dbHelper: BDHelper) : ViewModel() {
             }
         }
     }
-
-
 
     fun getNoteById(noteId: Long): Note? {
         return dbHelper.getNoteById(noteId)

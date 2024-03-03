@@ -55,15 +55,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.noteapp.Auth.LoginScreen
+import com.example.noteapp.Auth.RegScreen
 import com.example.noteapp.ui.theme.NoteAppTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.text.DateFormat
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Date
 
 
 class MainActivity : ComponentActivity() {
     lateinit var dbBDHelper: BDHelper
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
+        auth = Firebase.auth
+
         super.onCreate(savedInstanceState)
         val dbHelper = BDHelper(applicationContext)
         setContent {
@@ -74,14 +83,19 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "noteList") {
+                    NavHost(navController = navController, startDestination = "login") {
+                        composable("login") {
+                            LoginScreen(navController = navController)
+                        }
+                        composable("register") {
+                            RegScreen(navController = navController)
+                        }
                         composable("noteList") {
                             NoteListScreen(
                                 viewModel = NoteViewModel(dbHelper),
                                 onAddNoteClick = {
                                     navController.navigate("addNote")
                                 },
-
                                 onEditClick = { selectedNote ->
                                     navController.navigate("edit/${selectedNote.id}")
                                 },
@@ -129,6 +143,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+
         }
     }
 }
@@ -185,14 +207,12 @@ fun NoteItem(
 
 @Composable
 fun getFormattedDateTime(creationTime: LocalDateTime): String {
-    val currentDate = Date(creationTime)
     val dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, LocalContext.current.resources.configuration.locales[0])
-    return dateFormat.format(currentDate)
+    return dateFormat.format(Date.from(creationTime.toInstant(ZoneOffset.UTC)))
 }
 
-fun Date(creationTime: LocalDateTime): Date {
-    TODO("Not yet implemented")
-}
+
+
 
 /*@Composable
 fun NoteItem(
@@ -266,8 +286,8 @@ fun NoteListScreen(
     onEditClick: (Note) -> Unit,
     onAddNoteClick: () -> Unit
 ) {
-    //val notes by remember { viewModel.notes}
-    val notes: List<Note> = viewModel.notes.value
+    val notesSceen by remember { viewModel.notes}
+    //val notes: List<Note> = viewModel.notes.value
 
     Scaffold(
         topBar = {
@@ -282,7 +302,7 @@ fun NoteListScreen(
         }
     ) {
         LazyColumn(modifier = Modifier.padding(top = 60.dp)) {
-            items(notes) { note ->
+            items(notesSceen) { note ->
                 NoteItem(
                     note = note,
                     onNoteClick = { onNoteClick(note) },
@@ -570,12 +590,3 @@ fun NoteDetailScreen(
         }
     }
 }
-
-
-
-
-
-
-
-
-
